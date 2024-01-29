@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "t3app/server/api/trpc";
 
 const idSchema = z.object({ id: z.string() });
 
@@ -17,19 +17,19 @@ const userUpdateSchema = z.object({
 export const exampleRouter = createTRPCRouter({
   //get all users
   getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.user.findMany();
+    return ctx.db.user.findMany();
   }),
 
   //get user by id
   getOne: publicProcedure.input(idSchema).query(({ input, ctx }) => {
-    return ctx.prisma.user.findUnique({
+    return ctx.db.user.findUnique({
       where: idSchema.parse(input),
     });
   }),
 
   //create user
   createUser: publicProcedure.input(userSchema).mutation(({ input, ctx }) => {
-    return ctx.prisma.user.create({
+    return ctx.db.user.create({
       data: userSchema.parse(input),
     });
   }),
@@ -38,7 +38,7 @@ export const exampleRouter = createTRPCRouter({
   updateUser: publicProcedure
     .input(userUpdateSchema)
     .mutation(({ input, ctx }) => {
-      return ctx.prisma.user.update({
+      return ctx.db.user.update({
         where: {
           id: input.id.toString(),
         },
@@ -48,7 +48,7 @@ export const exampleRouter = createTRPCRouter({
 
   //delete user
   deleteUser: publicProcedure.input(idSchema).mutation(({ input, ctx }) => {
-    return ctx.prisma.user.delete({
+    return ctx.db.user.delete({
       where: idSchema.parse(input),
     });
   }),
